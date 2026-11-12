@@ -9,6 +9,7 @@ import { BullModule } from "@nestjs/bull";
 import { ProjectModule } from "@/modules/project/project.module";
 import { MilestoneModule } from "./modules/milestone/milestone.module";
 import { CreditLedgerModule } from "./modules/credit-ledger/credit-ledger.module";
+import { EquipmentModule } from "./modules/equipment/equipment.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CreditLedgerModule } from "./modules/credit-ledger/credit-ledger.module
     MilestoneModule,
     TaskModule,
     CreditLedgerModule,
+    EquipmentModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
