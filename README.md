@@ -1,133 +1,79 @@
-# Krown Dex Backend – Setup & Run Guide
+# Labify API
 
-````bash
+Labify is a NestJS REST API for managing projects, milestones, tasks, equipment, equipment rules, maintenance tickets, and credit ledger records. It uses PostgreSQL with TypeORM and Redis for the Bull queue connection.
 
-This guide will help you set up and run the NestJS backend project locally.
+## Requirements
 
-## 🚀 Prerequisites
-Before starting, ensure the following are installed:
-- Node.js v22 or later
+- Node.js 20 or newer
+- npm (the repository includes `package-lock.json`)
 - PostgreSQL
 - Redis
-- npm, yarn, or pnpm (any package manager)
-- Docker (optional, for containerized setup)
 
----
+## Local setup
 
-## 📦 Install Dependencies
-Use any of the following commands:
+1. Install dependencies and create your local environment file:
+
+   ```bash
+   npm ci
+   cp .env.example .env
+   ```
+
+2. Edit `.env` with your local PostgreSQL, Redis, and SMTP settings. The example values target local services. `JWT_BEARER_SECRET` and `COOKIE_SECRET` are development placeholders; replace them with private random values outside local development.
+
+3. Create the database configured by `DB_DATABASE` (default: `labify_db`). For example, with PostgreSQL tools installed:
+
+   ```bash
+   createdb labify_db
+   ```
+
+4. Apply the TypeORM migrations:
+
+   ```bash
+   npm run migration:run
+   ```
+
+5. Start the API in watch mode:
+
+   ```bash
+   npm run start:dev
+   ```
+
+The API listens on `http://localhost:5000` by default. Swagger documentation is available at [http://localhost:5000/api](http://localhost:5000/api), and the health endpoint is [http://localhost:5000/health](http://localhost:5000/health).
+
+## API areas
+
+The current controllers expose these resource paths:
+
+- `/projects`
+- `/milestones`
+- `/tasks`
+- `/credits`
+- `/equipment`
+- `/equipment-rules`
+- `/maintenance-tickets`
+
+Most resources support create, list, read by ID, update, and delete operations. See Swagger for request and response schemas. List endpoints accept `page` and `limit`; equipment and maintenance endpoints also support their controller-defined filters.
+
+## Other commands
 
 ```bash
-pnpm install
-# or
-yarn install
-# or
-npm install
-
-
-````
-
-# 🔧 Environment Variables
-
-Go to the project root directory
-Find the file .env.example
-Create a .env file in the same directory
-Copy all content from .env.example into .env
-Update values based on your local environment
-Example:
-
-```bash
-cp .env.example .env
+npm run build              # Compile to dist/
+npm run start:prod         # Run the compiled API
+npm run migration:rollback # Revert the latest migration
+npm run migration:rollbackAll
+npm run seeder:run:dev     # Run development seeders (currently no seeders are registered)
 ```
 
-# 🗄️ Database Setup & Migrations
+The production entry point is `dist/main.js`. Docker files are included, but the current Dockerfile expects a `pnpm-lock.yaml`, which is not present in this repository; use the npm commands above unless that lockfile is added.
 
-Create the database
+## Project layout
 
-```bash
-create db krown_dex_db
-
-```
-
-Run migrations
-
-```bash
-pnpm run migration:run
-# or
-yarn migration:run
-# or
-npm run migration:run
-
-```
-
-# ⚡ Redis Setup
-
-Option 1: Run Redis with Docker
-
-```bash
-docker run -d --name krown-redis -p 6379:6379 redis:7-alpine
-```
-
-Option 2: Native install- Start Redis manually, then ensure .env values match:
-
-```bash
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-```
-
-# ▶️ Running the Backend (Development)
-
-Start the NestJS app:
-
-```bash
-pnpm start:dev
-# or
-yarn start:dev
-# or
-npm run start:dev
-
-```
-
-# 🏗️ Production Build
-
-Create a production build:
-
-```bash
-pnpm build
-# or
-yarn build
-# or
-npm run build
-
-```
-
-Start the production server:
-
-```bash
-pnpm start:prod
-# or
-yarn start:prod
-# or
-npm run start:prod
-
-```
-
-# 📁 Project Structure (Overview)
-
-```bash
-/project-root
-  ├─ src/
-  │   ├─ modules/
-  │   ├─ common/
-  │   ├─ config/
-  │   ├─ main.ts
-  │   └─ app.module.ts
-  ├─ migrations/
-  ├─ test/
-  ├─ .env.example
-  ├─ package.json
-  └─ tsconfig.json
-
+```text
+src/
+  config/       Application and PostgreSQL configuration
+  database/     TypeORM data source and migrations
+  modules/      Projects, milestones, tasks, credits, equipment, and maintenance
+  providers/    PostgreSQL and Redis integrations
+  common/       Shared guards, decorators, enums, and utilities
+  main.ts       HTTP server, middleware, CORS, and Swagger setup
 ```
