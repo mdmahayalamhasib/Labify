@@ -1,5 +1,4 @@
-
-import { ProjectStatus } from "@/common/enums/project-status.enum";
+import { ProjectStatus } from "../../../common/enums/project-status.enum";
 import {
   Column,
   Entity,

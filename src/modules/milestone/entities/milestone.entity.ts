@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 
 import { Project } from "../../project/entities/project.entity";
-import { MilestoneStatus } from "@/common/enums/milestone-status.enum";
+import { MilestoneStatus } from "../../../common/enums/milestone-status.enum";
 
 @Entity({ name: "milestones" })
 export class Milestone {

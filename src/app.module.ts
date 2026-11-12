@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { TaskModule } from "./modules/task/task.module";
 import { ConfigModule } from "@nestjs/config";
 import { PostgresDatabaseProviderModule } from "@/providers/database/postgres/provider.module";
 import { AppController } from "@/src/app.controller";
@@ -13,6 +14,7 @@ import { MilestoneModule } from "./modules/milestone/milestone.module";
     PostgresDatabaseProviderModule,
     ProjectModule,
     MilestoneModule,
+    TaskModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
