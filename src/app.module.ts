@@ -12,6 +12,7 @@ import { CreditLedgerModule } from "./modules/credit-ledger/credit-ledger.module
 import { EquipmentModule } from "./modules/equipment/equipment.module";
 import { EquipmentRuleModule } from "./modules/equipment-rule/equipment-rule.module";
 import { MaintenanceTicketModule } from "./modules/maintenance-ticket/maintenance-ticket.module";
+import { AuthModule } from "@/modules/auth/auth.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MaintenanceTicketModule } from "./modules/maintenance-ticket/maintenanc
     EquipmentModule,
     EquipmentRuleModule,
     MaintenanceTicketModule,
+    AuthModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
