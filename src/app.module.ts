@@ -13,6 +13,7 @@ import { EquipmentModule } from "./modules/equipment/equipment.module";
 import { EquipmentRuleModule } from "./modules/equipment-rule/equipment-rule.module";
 import { MaintenanceTicketModule } from "./modules/maintenance-ticket/maintenance-ticket.module";
 import { BookingModule } from "./modules/booking/booking.module";
+import { AuthModule } from "@/modules/auth/auth.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { BookingModule } from "./modules/booking/booking.module";
     EquipmentRuleModule,
     MaintenanceTicketModule,
     BookingModule,
+    AuthModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
