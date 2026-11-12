@@ -8,6 +8,7 @@ import global_config from "@/config/global_config";
 import { BullModule } from "@nestjs/bull";
 import { ProjectModule } from "@/modules/project/project.module";
 import { MilestoneModule } from "./modules/milestone/milestone.module";
+import { CreditLedgerModule } from "./modules/credit-ledger/credit-ledger.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MilestoneModule } from "./modules/milestone/milestone.module";
     ProjectModule,
     MilestoneModule,
     TaskModule,
+    CreditLedgerModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
