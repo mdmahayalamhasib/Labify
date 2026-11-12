@@ -6,11 +6,13 @@ import { AppService } from "@/src/app.service";
 import global_config from "@/config/global_config";
 import { BullModule } from "@nestjs/bull";
 import { ProjectModule } from "@/modules/project/project.module";
+import { MilestoneModule } from "./modules/milestone/milestone.module";
 
 @Module({
   imports: [
     PostgresDatabaseProviderModule,
     ProjectModule,
+    MilestoneModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
