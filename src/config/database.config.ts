@@ -2,6 +2,7 @@ import {
   DefaultNamingStrategy,
   NamingStrategyInterface,
   DataSourceOptions,
+  DataSource,
 } from "typeorm";
 import { camelCase, snakeCase } from "typeorm/util/StringUtils";
 import * as dotenv from "dotenv";
@@ -96,3 +97,4 @@ export const dataSourceOptions: DataSourceOptions = {
 };
 
 export default dataSourceOptions;
+export const AppDataSource = new DataSource(dataSourceOptions);
