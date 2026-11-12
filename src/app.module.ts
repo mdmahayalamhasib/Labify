@@ -10,6 +10,7 @@ import { ProjectModule } from "@/modules/project/project.module";
 import { MilestoneModule } from "./modules/milestone/milestone.module";
 import { CreditLedgerModule } from "./modules/credit-ledger/credit-ledger.module";
 import { EquipmentModule } from "./modules/equipment/equipment.module";
+import { EquipmentRuleModule } from "./modules/equipment-rule/equipment-rule.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EquipmentModule } from "./modules/equipment/equipment.module";
     TaskModule,
     CreditLedgerModule,
     EquipmentModule,
+    EquipmentRuleModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
