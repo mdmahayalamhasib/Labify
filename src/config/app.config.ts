@@ -23,8 +23,9 @@ export const envSchema = z
     MAILER_HOST: z.string(),
     MAILER_PORT: z.coerce.number(),
     MAILER_SECURE: z.coerce.boolean(),
-    MAILER_USER: z.string(),
-    MAILER_PASSWORD: z.string(),
+    // Local SMTP servers often do not require authentication.
+    MAILER_USER: z.string().default(""),
+    MAILER_PASSWORD: z.string().default(""),
     MAILER_FROM: z.string(),
     BULB_REWARD_INTERVAL_SECOND: z.coerce.number().default(7 * 86400),
     BLOCK_QUERY_INTERVAL: z.coerce.number().default(10000),
