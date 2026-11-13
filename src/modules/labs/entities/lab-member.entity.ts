@@ -15,7 +15,7 @@ export class LabMember {
   userId: string;
 
   @Column()
-  memberRole: string; // e.g., 'OWNER', 'MEMBER'
+  memberRole: string; 
 
   @Column({ nullable: true })
   supervisorName: string;

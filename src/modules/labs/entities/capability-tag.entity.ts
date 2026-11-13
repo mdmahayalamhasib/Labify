@@ -10,7 +10,7 @@ export class CapabilityTag {
   name: string;
 
   @Column()
-  category: string; // e.g., 'instrument', 'method', 'dataset'
+  category: string; 
 
   @OneToMany(() => LabCapability, (labCap) => labCap.tag, { cascade: true })
   labCapabilities: LabCapability[];

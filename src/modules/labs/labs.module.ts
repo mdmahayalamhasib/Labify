@@ -1,13 +1,23 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "./entities/lab.entity";
-import { UserController } from "./labs.controller";
-import { UserService } from "./labs.service";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LabsController } from './labs.controller';
+import { LabsService } from './labs.service';
+import { Lab } from './entities/lab.entity';
+import { LabMember } from './entities/lab-member.entity';
+import { CapabilityTag } from './entities/capability-tag.entity';
+import { LabCapability } from './entities/lab-capability.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Lab,
+      LabMember,
+      CapabilityTag,
+      LabCapability,
+    ]),
+  ],
+  controllers: [LabsController],
+  providers: [LabsService],
+  exports: [LabsService],
 })
-export class UserModule {}
+export class LabsModule {}
