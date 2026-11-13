@@ -1,10 +1,11 @@
 import {
   Injectable,
+  ConflictException,
   NotFoundException,
 } from "@nestjs/common";
 
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 
 import { CreateEquipmentDto } from "./dto/create-equipment.dto";
 import { UpdateEquipmentDto } from "./dto/update-equipment.dto";
@@ -81,7 +82,19 @@ export class EquipmentService {
       throw new NotFoundException("Equipment not found");
     }
 
-    await this.equipmentRepository.delete(id);
+    try {
+      await this.equipmentRepository.delete(id);
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        (error.driverError as { code?: string })?.code === "23503"
+      ) {
+        throw new ConflictException(
+          "Equipment has rules, maintenance tickets or bookings and cannot be deleted",
+        );
+      }
+      throw error;
+    }
     return { message: "Equipment deleted successfully" };
   }
 }

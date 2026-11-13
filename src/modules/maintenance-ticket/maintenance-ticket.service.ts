@@ -1,5 +1,6 @@
 import {
   Injectable,
+  ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
 
@@ -12,6 +13,8 @@ import { UpdateMaintenanceTicketDto } from "./dto/update-maintenance-ticket.dto"
 import { MaintenanceTicket } from "./entities/maintenance-ticket.entity";
 import { Equipment } from "../equipment/entities/equipment.entity";
 import { MaintenanceStatus } from "../../common/enums/maintenance-status.enum";
+import { AccountRole } from "../../common/enums/account-role.enum";
+import { AuthUser } from "../../common/interfaces/auth-user.interface";
 
 @Injectable()
 export class MaintenanceTicketService {
@@ -23,7 +26,7 @@ export class MaintenanceTicketService {
     private readonly equipmentRepository: Repository<Equipment>,
   ) {}
 
-  async createMaintenanceTicket(dto: CreateMaintenanceTicketDto) {
+  async createMaintenanceTicket(dto: CreateMaintenanceTicketDto, user: AuthUser) {
     const equipment = await this.equipmentRepository.findOne({
       where: { equipmentId: dto.equipmentId },
     });
@@ -32,7 +35,10 @@ export class MaintenanceTicketService {
       throw new NotFoundException("Equipment not found");
     }
 
-    const ticket = this.maintenanceTicketRepository.create(dto);
+    const ticket = this.maintenanceTicketRepository.create({
+      ...dto,
+      reportedById: user.id,
+    });
 
     return await this.maintenanceTicketRepository.save(ticket);
   }
@@ -77,13 +83,29 @@ export class MaintenanceTicketService {
     }
     return ticket;
   }
-  async updateMaintenanceTicket(id: string, dto: UpdateMaintenanceTicketDto) {
+  async updateMaintenanceTicket(
+    id: string,
+    dto: UpdateMaintenanceTicketDto,
+    user: AuthUser,
+  ) {
     const ticket = await this.maintenanceTicketRepository.findOne({
       where: { ticketId: id },
     });
 
     if (!ticket) {
       throw new NotFoundException("Maintenance ticket not found");
+    }
+
+    const isStaff = this.isStaff(user);
+
+    if (!isStaff && ticket.reportedById !== user.id) {
+      throw new ForbiddenException("You can only modify tickets you reported");
+    }
+
+    if (!isStaff && dto.status) {
+      throw new ForbiddenException(
+        "Only a lab owner or admin can change a ticket's status",
+      );
     }
 
     Object.assign(ticket, dto);
@@ -99,7 +121,7 @@ export class MaintenanceTicketService {
     return await this.maintenanceTicketRepository.save(ticket);
   }
 
-  async deleteMaintenanceTicket(id: string) {
+  async deleteMaintenanceTicket(id: string, user: AuthUser) {
     const ticket = await this.maintenanceTicketRepository.findOne({
       where: { ticketId: id },
     });
@@ -108,7 +130,18 @@ export class MaintenanceTicketService {
       throw new NotFoundException("Maintenance ticket not found");
     }
 
+    if (!this.isStaff(user) && ticket.reportedById !== user.id) {
+      throw new ForbiddenException("You can only delete tickets you reported");
+    }
+
     await this.maintenanceTicketRepository.delete(id);
     return { message: "Maintenance ticket deleted successfully" };
+  }
+
+  private isStaff(user: AuthUser) {
+    return (
+      user.roles.includes(AccountRole.ADMIN) ||
+      user.roles.includes(AccountRole.LAB_OWNER)
+    );
   }
 }

@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  ParseUUIDPipe,
+  ParseEnumPipe,
   DefaultValuePipe,
   BadRequestException,
   Query,
@@ -16,22 +18,24 @@ import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingDto } from "./dto/update-booking.dto";
 import { BookingService } from "./booking.service";
 import { BookingStatus } from "../../common/enums/booking-status.enum";
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
+import { AuthUser } from "../../common/interfaces/auth-user.interface";
 
 @Controller("bookings")
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
   @Post()
-  createBooking(@Body() dto: CreateBookingDto) {
-    return this.bookingService.createBooking(dto);
+  createBooking(@Body() dto: CreateBookingDto, @CurrentUser() user: AuthUser) {
+    return this.bookingService.createBooking(dto, user);
   }
 
   @Get()
   getAllBookings(
     @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query("equipmentId") equipmentId?: string,
-    @Query("userId") userId?: string,
-    @Query("status") status?: BookingStatus,
+    @Query("equipmentId", new ParseUUIDPipe({ optional: true })) equipmentId?: string,
+    @Query("userId", new ParseUUIDPipe({ optional: true })) userId?: string,
+    @Query("status", new ParseEnumPipe(BookingStatus, { optional: true })) status?: BookingStatus,
   ) 
   {
     if (page < 1) {
@@ -51,20 +55,21 @@ export class BookingController {
   }
 
   @Get(":id")
-  getBookingById(@Param("id") id: string) {
+  getBookingById(@Param("id", ParseUUIDPipe) id: string) {
     return this.bookingService.getBookingById(id);
   }
 
   @Patch(":id")
   updateBooking(
-    @Param("id") id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() dto: UpdateBookingDto,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.bookingService.updateBooking(id, dto);
+    return this.bookingService.updateBooking(id, dto, user);
   }
 
   @Delete(":id")
-  deleteBooking(@Param("id") id: string) {
-    return this.bookingService.deleteBooking(id);
+  deleteBooking(@Param("id", ParseUUIDPipe) id: string, @CurrentUser() user: AuthUser) {
+    return this.bookingService.deleteBooking(id, user);
   }
 }
