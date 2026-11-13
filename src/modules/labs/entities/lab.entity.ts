@@ -23,7 +23,7 @@ export class Lab {
   city: string;
 
   @Column({ default: 'public' })
-  visibility: string; // 'public' or 'private'
+  visibility: string; 
 
   @CreateDateColumn()
   verifiedAt: Date;

@@ -3,7 +3,7 @@ import { LabsService } from './labs.service';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { CreateCapabilityTagDto } from './dto/create-capability-tag.dto';
 import { CreateLabCapabilityDto } from './dto/create-lab-capability.dto';
-import { AddLabMemberDto } from './dto/lab-member.dto'; // Ensure filename matches exactly
+import { AddLabMemberDto } from './dto/lab-member.dto'; 
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
