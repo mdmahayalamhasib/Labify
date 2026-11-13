@@ -51,6 +51,7 @@ The current controllers expose these resource paths:
 - `/equipment`
 - `/equipment-rules`
 - `/maintenance-tickets`
+- `/bookings`
 
 Most resources support create, list, read by ID, update, and delete operations. See Swagger for request and response schemas. List endpoints accept `page` and `limit`; equipment and maintenance endpoints also support their controller-defined filters.
 

@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  ParseUUIDPipe,
+  ParseEnumPipe,
   DefaultValuePipe,
   BadRequestException,
   Query,
@@ -16,21 +18,26 @@ import { CreateMaintenanceTicketDto } from "./dto/create-maintenance-ticket.dto"
 import { UpdateMaintenanceTicketDto } from "./dto/update-maintenance-ticket.dto";
 import { MaintenanceTicketService } from "./maintenance-ticket.service";
 import { MaintenanceStatus } from "../../common/enums/maintenance-status.enum";
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
+import { AuthUser } from "../../common/interfaces/auth-user.interface";
 
 @Controller("maintenance-tickets")
 export class MaintenanceTicketController {
   constructor(private readonly maintenanceTicketService: MaintenanceTicketService) {}
   @Post()
-  createMaintenanceTicket(@Body() dto: CreateMaintenanceTicketDto) {
-    return this.maintenanceTicketService.createMaintenanceTicket(dto);
+  createMaintenanceTicket(
+    @Body() dto: CreateMaintenanceTicketDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.maintenanceTicketService.createMaintenanceTicket(dto, user);
   }
 
   @Get()
   getAllMaintenanceTickets(
     @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query("equipmentId") equipmentId?: string,
-    @Query("status") status?: MaintenanceStatus,
+    @Query("equipmentId", new ParseUUIDPipe({ optional: true })) equipmentId?: string,
+    @Query("status", new ParseEnumPipe(MaintenanceStatus, { optional: true })) status?: MaintenanceStatus,
   ) 
   {
     if (page < 1) {
@@ -50,20 +57,24 @@ export class MaintenanceTicketController {
   }
 
   @Get(":id")
-  getMaintenanceTicketById(@Param("id") id: string) {
+  getMaintenanceTicketById(@Param("id", ParseUUIDPipe) id: string) {
     return this.maintenanceTicketService.getMaintenanceTicketById(id);
   }
 
   @Patch(":id")
   updateMaintenanceTicket(
-    @Param("id") id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() dto: UpdateMaintenanceTicketDto,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.maintenanceTicketService.updateMaintenanceTicket(id, dto);
+    return this.maintenanceTicketService.updateMaintenanceTicket(id, dto, user);
   }
 
   @Delete(":id")
-  deleteMaintenanceTicket(@Param("id") id: string) {
-    return this.maintenanceTicketService.deleteMaintenanceTicket(id);
+  deleteMaintenanceTicket(
+    @Param("id", ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.maintenanceTicketService.deleteMaintenanceTicket(id, user);
   }
 }
