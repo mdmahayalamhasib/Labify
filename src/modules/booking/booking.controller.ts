@@ -16,13 +16,15 @@ import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingDto } from "./dto/update-booking.dto";
 import { BookingService } from "./booking.service";
 import { BookingStatus } from "../../common/enums/booking-status.enum";
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
+import { AuthUser } from "../../common/interfaces/auth-user.interface";
 
 @Controller("bookings")
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
   @Post()
-  createBooking(@Body() dto: CreateBookingDto) {
-    return this.bookingService.createBooking(dto);
+  createBooking(@Body() dto: CreateBookingDto, @CurrentUser() user: AuthUser) {
+    return this.bookingService.createBooking(dto, user);
   }
 
   @Get()
@@ -59,12 +61,13 @@ export class BookingController {
   updateBooking(
     @Param("id") id: string,
     @Body() dto: UpdateBookingDto,
+    @CurrentUser() user: AuthUser,
   ) {
-    return this.bookingService.updateBooking(id, dto);
+    return this.bookingService.updateBooking(id, dto, user);
   }
 
   @Delete(":id")
-  deleteBooking(@Param("id") id: string) {
-    return this.bookingService.deleteBooking(id);
+  deleteBooking(@Param("id") id: string, @CurrentUser() user: AuthUser) {
+    return this.bookingService.deleteBooking(id, user);
   }
 }

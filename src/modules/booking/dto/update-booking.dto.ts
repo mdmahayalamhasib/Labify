@@ -2,7 +2,6 @@
 import {
   IsString,
   IsOptional,
-  IsUUID,
   IsDateString,
   IsEnum,
 } from "class-validator";
@@ -25,8 +24,4 @@ export class UpdateBookingDto {
   @IsOptional()
   @IsEnum(BookingStatus)
   status?: BookingStatus;
-
-  @IsOptional()
-  @IsUUID()
-  reviewedById?: string;
 }
