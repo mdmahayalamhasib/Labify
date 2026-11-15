@@ -53,7 +53,7 @@ async function bootstrap() {
 
   // 2. Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle("KDex API")
+    .setTitle("Labify API")
     .setVersion("1.0")
     .addBearerAuth()
     .build();

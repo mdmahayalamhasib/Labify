@@ -5,19 +5,12 @@ import {
   IsUUID,
   IsOptional,
   IsDateString,
-  IsEnum,
 } from "class-validator";
-
-import { BookingStatus } from "@/common/enums/booking-status.enum";
 
 export class CreateBookingDto {
   @IsNotEmpty()
   @IsUUID()
   equipmentId: string = "";
-
-  @IsNotEmpty()
-  @IsUUID()
-  userId: string = "";
 
   @IsNotEmpty()
   @IsDateString()
@@ -30,8 +23,4 @@ export class CreateBookingDto {
   @IsOptional()
   @IsString()
   purpose?: string;
-
-  @IsOptional()
-  @IsEnum(BookingStatus)
-  status?: BookingStatus;
 }

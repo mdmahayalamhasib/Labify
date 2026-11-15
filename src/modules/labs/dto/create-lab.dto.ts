@@ -1,35 +1,27 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateLabDto {
+  @IsString()
   @IsNotEmpty()
-  name: string = "";
+  name!: string;
 
+  @IsString()
   @IsNotEmpty()
-  email: string = "";
+  description!: string;
 
+  @IsString()
   @IsNotEmpty()
-  password: string = "";
+  domain!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  country!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city!: string;
 
   @IsOptional()
-  created_at?: Date = new Date();
-
-  @IsOptional()
-  updated_at?: Date = new Date();
-}
-
-export class UpdateUserDto {
-  @IsOptional()
-  name: string = "";
-
-  @IsOptional()
-  email: string = "";
-
-  @IsOptional()
-  password: string = "";
-
-  @IsOptional()
-  created_at?: Date = new Date();
-
-  @IsOptional()
-  updated_at?: Date = new Date();
+  @IsString()
+  visibility?: string;
 }

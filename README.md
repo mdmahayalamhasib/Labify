@@ -1,6 +1,6 @@
 # Labify API
 
-Labify is a NestJS REST API for managing projects, milestones, tasks, equipment, equipment rules, maintenance tickets, and credit ledger records. It uses PostgreSQL with TypeORM and Redis for the Bull queue connection.
+Labify is a NestJS REST API for managing projects, milestones, tasks, equipment, equipment rules, maintenance tickets, credit ledger records, and labs. It uses PostgreSQL with TypeORM and Redis for the Bull queue connection.
 
 ## Requirements
 
@@ -51,8 +51,10 @@ The current controllers expose these resource paths:
 - `/equipment`
 - `/equipment-rules`
 - `/maintenance-tickets`
+- `/bookings`
+- `/labs`
 
-Most resources support create, list, read by ID, update, and delete operations. See Swagger for request and response schemas. List endpoints accept `page` and `limit`; equipment and maintenance endpoints also support their controller-defined filters.
+Most resources support create, list, read by ID, update, and delete operations. Labs supports create, filtered list, and update, plus adding members, capability tags, and lab capabilities. See Swagger for request and response schemas. List endpoints accept `page` and `limit`; equipment, maintenance, and labs endpoints also support their controller-defined filters. Labs list filters are `domain`, `country`, and `city`.
 
 ## Other commands
 
@@ -72,7 +74,7 @@ The production entry point is `dist/main.js`. Docker files are included, but the
 src/
   config/       Application and PostgreSQL configuration
   database/     TypeORM data source and migrations
-  modules/      Projects, milestones, tasks, credits, equipment, and maintenance
+  modules/      Projects, milestones, tasks, credits, equipment, maintenance, and labs
   providers/    PostgreSQL and Redis integrations
   common/       Shared guards, decorators, enums, and utilities
   main.ts       HTTP server, middleware, CORS, and Swagger setup

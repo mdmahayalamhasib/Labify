@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
 import { Lab } from './lab.entity';
 import { CapabilityTag } from './capability-tag.entity';
 
@@ -6,26 +6,28 @@ import { CapabilityTag } from './capability-tag.entity';
 @Unique(['labId', 'tagId', 'kind'])
 export class LabCapability {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column()
-  labId: string;
+  @Column({ type: 'uuid' })
+  labId!: string;
 
-  @Column()
-  tagId: string;
+  @Column({ type: 'uuid' })
+  tagId!: string;
 
   @Column({
     type: 'enum',
     enum: ['OFFER', 'NEED'],
   })
-  kind: 'OFFER' | 'NEED';
+  kind!: 'OFFER' | 'NEED';
 
   @Column({ nullable: true })
-  note: string;
+  note?: string;
 
   @ManyToOne(() => Lab, (lab) => lab.capabilities, { onDelete: 'CASCADE' })
-  lab: Lab;
+  @JoinColumn({ name: 'lab_id' })
+  lab!: Lab;
 
-  @ManyToOne(() => Tag, (tag) => tag.labCapabilities, { onDelete: 'CASCADE' })
-  tag: CapabilityTag;
+  @ManyToOne(() => CapabilityTag, (tag) => tag.labCapabilities, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'tag_id' })
+  tag!: CapabilityTag;
 }
