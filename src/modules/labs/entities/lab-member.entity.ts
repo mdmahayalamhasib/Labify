@@ -17,6 +17,7 @@ export class LabMember {
   @Column()
   memberRole!: string; 
 
+
   @Column({ nullable: true })
   supervisorName?: string;
 
