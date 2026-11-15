@@ -4,8 +4,8 @@ import { CreateLabDto } from './dto/create-lab.dto';
 import { CreateCapabilityTagDto } from './dto/create-capability-tag.dto';
 import { CreateLabCapabilityDto } from './dto/create-lab-capability.dto';
 import { AddLabMemberDto } from './dto/lab-member.dto'; 
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
+import { RolesGuard } from '../../common/guard/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { IRequest } from '../../common/interfaces/request.interface';
 
