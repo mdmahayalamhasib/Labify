@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Query, UseGuards, Req } from '@nestjs/common';
 import { LabsService } from './labs.service';
 import { CreateLabDto } from './dto/create-lab.dto';
+import { UpdateLabDto } from './dto/update-lab.dto';
 import { CreateCapabilityTagDto } from './dto/create-capability-tag.dto';
 import { CreateLabCapabilityDto } from './dto/create-lab-capability.dto';
 import { AddLabMemberDto } from './dto/lab-member.dto'; 
@@ -31,7 +32,7 @@ export class LabsController {
   }
 
   @Patch(':id')
-  updateLab(@Param('id') id: string, @Body() updateDto: any, @Req() req: IRequest) {
+  updateLab(@Param('id') id: string, @Body() updateDto: UpdateLabDto, @Req() req: IRequest) {
     return this.labsService.updateLab(id, updateDto, req.user!.id);
   }
 
