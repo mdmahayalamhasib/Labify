@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, LessThan, MoreThan, Not, Repository } from "typeorm";
+import { In, IsNull, LessThan, MoreThan, Not, Repository } from "typeorm";
 
 import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingDto } from "./dto/update-booking.dto";
@@ -15,6 +15,8 @@ import { UpdateBookingDto } from "./dto/update-booking.dto";
 import { Booking } from "./entities/booking.entity";
 import { Equipment } from "../equipment/entities/equipment.entity";
 import { EquipmentRule } from "../equipment-rule/entities/equipment-rule.entity";
+import { MaintenanceTicket } from "../maintenance-ticket/entities/maintenance-ticket.entity";
+import { MaintenanceStatus } from "../../common/enums/maintenance-status.enum";
 import { BookingStatus } from "../../common/enums/booking-status.enum";
 import { EquipmentStatus } from "../../common/enums/equipment-status.enum";
 import { AccountRole } from "../../common/enums/account-role.enum";
@@ -31,6 +33,9 @@ export class BookingService {
 
     @InjectRepository(EquipmentRule)
     private readonly equipmentRuleRepository: Repository<EquipmentRule>,
+
+    @InjectRepository(MaintenanceTicket)
+    private readonly maintenanceTicketRepository: Repository<MaintenanceTicket>,
   ) {}
 
   async createBooking(dto: CreateBookingDto, user: AuthUser) {
@@ -50,6 +55,7 @@ export class BookingService {
     const endTime = new Date(dto.endTime);
 
     await this.assertValidSlot(dto.equipmentId, startTime, endTime);
+    await this.assertNoMaintenanceDowntime(dto.equipmentId, startTime, endTime);
     await this.assertRulesAllow(dto.equipmentId, startTime, endTime);
 
     const booking = this.bookingRepository.create({
@@ -141,6 +147,14 @@ export class BookingService {
       await this.assertRulesAllow(booking.equipmentId, startTime, endTime);
     }
 
+    if (timesChanged || dto.status === BookingStatus.APPROVED) {
+      await this.assertNoMaintenanceDowntime(
+        booking.equipmentId,
+        startTime,
+        endTime,
+      );
+    }
+
     Object.assign(booking, dto);
 
     if (
@@ -213,6 +227,31 @@ export class BookingService {
           `This equipment can be booked at most ${rule.advanceBookingDays} days in advance`,
         );
       }
+    }
+  }
+
+  private async assertNoMaintenanceDowntime(
+    equipmentId: string,
+    startTime: Date,
+    endTime: Date,
+  ) {
+    const active = {
+      equipmentId,
+      status: In([MaintenanceStatus.OPEN, MaintenanceStatus.IN_PROGRESS]),
+      downtimeStart: LessThan(endTime),
+    };
+
+    const downtime = await this.maintenanceTicketRepository.findOne({
+      where: [
+        { ...active, downtimeEnd: MoreThan(startTime) },
+        { ...active, downtimeEnd: IsNull() },
+      ],
+    });
+
+    if (downtime) {
+      throw new ConflictException(
+        "Equipment is under maintenance during this time slot",
+      );
     }
   }
 

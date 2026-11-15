@@ -48,6 +48,12 @@ export class MaintenanceTicket {
   priority!: MaintenancePriority;
 
   @Column({ type: "timestamp", nullable: true })
+  downtimeStart?: Date | null;
+
+  @Column({ type: "timestamp", nullable: true })
+  downtimeEnd?: Date | null;
+
+  @Column({ type: "timestamp", nullable: true })
   resolvedAt?: Date;
 
   @CreateDateColumn()

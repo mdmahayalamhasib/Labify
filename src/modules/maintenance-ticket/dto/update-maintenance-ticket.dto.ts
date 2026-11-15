@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsEnum,
+  IsDateString,
   MaxLength,
 } from "class-validator";
 
@@ -28,4 +29,12 @@ export class UpdateMaintenanceTicketDto {
   @IsOptional()
   @IsEnum(MaintenancePriority)
   priority?: MaintenancePriority;
+
+  @IsOptional()
+  @IsDateString()
+  downtimeStart?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  downtimeEnd?: string | null;
 }

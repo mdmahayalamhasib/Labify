@@ -1,5 +1,6 @@
 import {
   Injectable,
+  BadRequestException,
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
@@ -35,8 +36,22 @@ export class MaintenanceTicketService {
       throw new NotFoundException("Equipment not found");
     }
 
+    const hasDowntime = dto.downtimeStart != null || dto.downtimeEnd != null;
+
+    if (hasDowntime && !this.isStaff(user)) {
+      throw new ForbiddenException(
+        "Only a lab owner or admin can schedule maintenance downtime",
+      );
+    }
+
+    const downtimeStart = dto.downtimeStart ? new Date(dto.downtimeStart) : null;
+    const downtimeEnd = dto.downtimeEnd ? new Date(dto.downtimeEnd) : null;
+    this.assertValidDowntime(downtimeStart, downtimeEnd);
+
     const ticket = this.maintenanceTicketRepository.create({
       ...dto,
+      downtimeStart,
+      downtimeEnd,
       reportedById: user.id,
     });
 
@@ -108,7 +123,28 @@ export class MaintenanceTicketService {
       );
     }
 
-    Object.assign(ticket, dto);
+    const { downtimeStart, downtimeEnd, ...rest } = dto;
+
+    if (
+      !isStaff &&
+      (downtimeStart !== undefined || downtimeEnd !== undefined)
+    ) {
+      throw new ForbiddenException(
+        "Only a lab owner or admin can schedule maintenance downtime",
+      );
+    }
+
+    Object.assign(ticket, rest);
+
+    if (downtimeStart !== undefined) {
+      ticket.downtimeStart = downtimeStart ? new Date(downtimeStart) : null;
+    }
+
+    if (downtimeEnd !== undefined) {
+      ticket.downtimeEnd = downtimeEnd ? new Date(downtimeEnd) : null;
+    }
+
+    this.assertValidDowntime(ticket.downtimeStart, ticket.downtimeEnd);
 
     if (
       (ticket.status === MaintenanceStatus.RESOLVED ||
@@ -136,6 +172,16 @@ export class MaintenanceTicketService {
 
     await this.maintenanceTicketRepository.delete(id);
     return { message: "Maintenance ticket deleted successfully" };
+  }
+
+  private assertValidDowntime(start?: Date | null, end?: Date | null) {
+    if (end && !start) {
+      throw new BadRequestException("downtimeEnd requires downtimeStart");
+    }
+
+    if (start && end && end <= start) {
+      throw new BadRequestException("downtimeEnd must be after downtimeStart");
+    }
   }
 
   private isStaff(user: AuthUser) {
