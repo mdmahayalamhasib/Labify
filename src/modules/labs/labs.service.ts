@@ -33,6 +33,7 @@ export class LabsService {
     const lab = this.labRepository.create(createLabDto);
     const savedLab = (await this.labRepository.save(lab)) as Lab;
 
+
     const member = this.memberRepository.create({
       labId: savedLab.labId,
       userId,

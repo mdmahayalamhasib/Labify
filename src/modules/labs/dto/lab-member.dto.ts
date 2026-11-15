@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
 export class AddLabMemberDto {
   @IsUUID()
   @IsNotEmpty()
-  userId!: string;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()
-  memberRole!: string; 
+  memberRole: string; 
 
   @IsOptional()
   @IsString()
