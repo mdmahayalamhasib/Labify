@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Lab } from './lab.entity';
 
@@ -6,23 +6,25 @@ import { Lab } from './lab.entity';
 @Unique(['labId', 'userId'])
 export class LabMember {
   @PrimaryGeneratedColumn('uuid')
-  labMemberId: string;
+  labMemberId!: string;
 
-  @Column()
-  labId: string;
+  @Column({ type: 'uuid' })
+  labId!: string;
 
-  @Column()
-  userId: string;
+  @Column({ type: 'uuid' })
+  userId!: string;
 
   @Column()
   memberRole: string; 
 
   @Column({ nullable: true })
-  supervisorName: string;
+  supervisorName?: string;
 
   @ManyToOne(() => Lab, (lab) => lab.members, { onDelete: 'CASCADE' })
-  lab: Lab;
+  @JoinColumn({ name: 'lab_id' })
+  lab!: Lab;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  user: User;
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 }

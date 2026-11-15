@@ -5,32 +5,32 @@ import { LabCapability } from './lab-capability.entity';
 @Entity('labs')
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
-  labId: string;
+  labId!: string;
 
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @Column('text')
-  description: string;
+  description!: string;
 
   @Column()
-  domain: string;
+  domain!: string;
 
   @Column()
-  country: string;
+  country!: string;
 
   @Column()
-  city: string;
+  city!: string;
 
   @Column({ default: 'public' })
   visibility: string; 
 
   @CreateDateColumn()
-  verifiedAt: Date;
+  verifiedAt!: Date;
 
   @OneToMany(() => LabMember, (member) => member.lab, { cascade: true })
-  members: LabMember[];
+  members!: LabMember[];
 
   @OneToMany(() => LabCapability, (cap) => cap.lab, { cascade: true })
-  capabilities: LabCapability[];
+  capabilities!: LabCapability[];
 }

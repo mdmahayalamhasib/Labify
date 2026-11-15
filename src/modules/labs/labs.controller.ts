@@ -7,6 +7,7 @@ import { AddLabMemberDto } from './dto/lab-member.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { IRequest } from '../../common/interfaces/request.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('labs')
@@ -14,8 +15,8 @@ export class LabsController {
   constructor(private readonly labsService: LabsService) {}
 
   @Post()
-  createLab(@Body() createLabDto: CreateLabDto, @Req() req) {
-    return this.labsService.createLab(createLabDto, req.user.userId);
+  createLab(@Body() createLabDto: CreateLabDto, @Req() req: IRequest) {
+    return this.labsService.createLab(createLabDto, req.user!.id);
   }
 
   @Get()
@@ -30,13 +31,13 @@ export class LabsController {
   }
 
   @Patch(':id')
-  updateLab(@Param('id') id: string, @Body() updateDto: any, @Req() req) {
-    return this.labsService.updateLab(id, updateDto, req.user.userId);
+  updateLab(@Param('id') id: string, @Body() updateDto: any, @Req() req: IRequest) {
+    return this.labsService.updateLab(id, updateDto, req.user!.id);
   }
 
   @Post(':id/members')
-  addMember(@Param('id') id: string, @Body() dto: AddLabMemberDto, @Req() req) {
-    return this.labsService.addMember(id, dto, req.user.userId);
+  addMember(@Param('id') id: string, @Body() dto: AddLabMemberDto, @Req() req: IRequest) {
+    return this.labsService.addMember(id, dto, req.user!.id);
   }
 
   @Post('tags')
@@ -47,7 +48,7 @@ export class LabsController {
   }
 
   @Post(':id/capabilities')
-  addCapability(@Param('id') id: string, @Body() dto: CreateLabCapabilityDto, @Req() req) {
-    return this.labsService.addLabCapability(id, dto, req.user.userId);
+  addCapability(@Param('id') id: string, @Body() dto: CreateLabCapabilityDto, @Req() req: IRequest) {
+    return this.labsService.addLabCapability(id, dto, req.user!.id);
   }
 }

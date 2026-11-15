@@ -14,7 +14,7 @@ import { EquipmentRuleModule } from "./modules/equipment-rule/equipment-rule.mod
 import { MaintenanceTicketModule } from "./modules/maintenance-ticket/maintenance-ticket.module";
 import { BookingModule } from "./modules/booking/booking.module";
 import { AuthModule } from "@/modules/auth/auth.module";
-import { labModule } from "@/modules/labs/labs.module";
+import { LabModule } from "@/modules/labs/labs.module";
 
 @Module({
   imports: [
@@ -27,6 +27,7 @@ import { labModule } from "@/modules/labs/labs.module";
     EquipmentRuleModule,
     MaintenanceTicketModule,
     BookingModule,
+    LabsModule,
     AuthModule,
 
     ConfigModule.forRoot({
