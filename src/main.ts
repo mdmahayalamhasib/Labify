@@ -3,6 +3,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { AppModule } from "@/src/app.module";
+import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 import * as dotenv from "dotenv";
 import { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
@@ -20,6 +21,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.useStaticAssets(join(process.cwd(), "uploads"), {
     prefix: "/uploads/",
