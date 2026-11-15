@@ -31,9 +31,7 @@ export class ProjectController {
   }
 
   @Get()
-  
-@Get()
-getAllProjects(
+  getAllProjects(
   @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
   @Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
 ) {

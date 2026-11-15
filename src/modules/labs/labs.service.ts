@@ -6,6 +6,7 @@ import { LabMember } from './entities/lab-member.entity';
 import { CapabilityTag } from './entities/capability-tag.entity';
 import { LabCapability } from './entities/lab-capability.entity';
 import { CreateLabDto } from './dto/create-lab.dto';
+import { UpdateLabDto } from './dto/update-lab.dto';
 import { CreateCapabilityTagDto } from './dto/create-capability-tag.dto';
 import { CreateLabCapabilityDto } from './dto/create-lab-capability.dto';
 import { AddLabMemberDto } from './dto/lab-member.dto';
@@ -59,7 +60,7 @@ export class LabsService {
     return { items, meta: { total, page, limit } };
   }
 
-  async updateLab(id: string, updateDto: any, userId: string): Promise<Lab> {
+  async updateLab(id: string, updateDto: UpdateLabDto, userId: string): Promise<Lab> {
     const lab = await this.labRepository.findOne({ where: { labId: id }, relations: ['members'] });
     if (!lab) throw new NotFoundException('Lab not found');
 

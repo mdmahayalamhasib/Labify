@@ -7,7 +7,9 @@ export class AddLabMemberDto {
 
   @IsString()
   @IsNotEmpty()
-  memberRole!: string;
+
+  memberRole!: string; 
+
 
   @IsOptional()
   @IsString()
