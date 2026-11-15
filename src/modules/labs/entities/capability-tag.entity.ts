@@ -11,7 +11,6 @@ export class CapabilityTag {
 
   @Column()
   category!: string;
-  category: string; 
 
   @OneToMany(() => LabCapability, (labCap) => labCap.tag, { cascade: true })
   labCapabilities!: LabCapability[];
