@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { isEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { LabVisibility } from '../enums/lab.enums';
 
 export class CreateLabDto {
   @IsString()
@@ -22,6 +23,8 @@ export class CreateLabDto {
   city!: string;
 
   @IsOptional()
-  @IsString()
-  visibility?: string;
+  @IsEnum(LabVisibility, {
+    message: `visibility must be one of: ${Object.values(LabVisibility).join(', ')}`,
+  })
+  visibility?: LabVisibility;
 }
