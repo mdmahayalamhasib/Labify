@@ -172,7 +172,7 @@ export class LabsService {
 
     const member = lab.members.find((m) => m.userId === memberUserId);
     if (!member) throw new NotFoundException('Member not found in this lab');
-.
+
     if (member.memberRole === LabMemberRole.OWNER) {
       throw new BadRequestException('The lab owner cannot be removed. Delete the lab instead.');
     }

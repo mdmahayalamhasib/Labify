@@ -1,4 +1,4 @@
-import { isEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { LabVisibility } from '../enums/lab.enums';
 
 export class CreateLabDto {
