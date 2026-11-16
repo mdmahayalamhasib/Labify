@@ -21,6 +21,7 @@ import { AddLabMemberDto } from './dto/lab-member.dto';
 import { LabMemberRole, LabVisibility } from './enums/lab.enums';
 import { AuthUser } from '../../common/interfaces/auth-user.interface';
 import { AccountRole } from '../../common/enums/account-role.enum';
+import { Equipment } from '../equipment/entities/equipment.entity';
 
 const MAX_PAGE_SIZE = 100;
 
@@ -37,6 +38,8 @@ export class LabsService {
     private labCapabilityRepository: Repository<LabCapability>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Equipment)
+    private equipmentRepository: Repository<Equipment>,
     private dataSource: DataSource,
   ) {}
 
@@ -193,6 +196,15 @@ export class LabsService {
   async deleteLab(id: string, userId: string) {
     const lab = await this.getLabWithMembers(id);
     this.assertOwner(lab, userId, 'Only the lab owner can delete this lab.');
+
+    const hasEquipment = await this.equipmentRepository.exist({
+      where: { labId: id },
+    });
+    if (hasEquipment) {
+      throw new ConflictException(
+        'Lab still has equipment and cannot be deleted. Remove its equipment first.',
+      );
+    }
 
     try {
       await this.labRepository.delete({ labId: id });

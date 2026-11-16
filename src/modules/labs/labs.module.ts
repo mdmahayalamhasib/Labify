@@ -7,6 +7,7 @@ import { LabMember } from './entities/lab-member.entity';
 import { CapabilityTag } from './entities/capability-tag.entity';
 import { LabCapability } from './entities/lab-capability.entity';
 import { User } from '../users/entities/user.entity';
+import { Equipment } from '../equipment/entities/equipment.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { User } from '../users/entities/user.entity';
       CapabilityTag,
       LabCapability,
       User, 
+      Equipment,
     ]),
   ],
   controllers: [LabsController],

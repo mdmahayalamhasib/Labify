@@ -54,7 +54,7 @@ export class MaintenanceTicket {
   downtimeEnd?: Date | null;
 
   @Column({ type: "timestamp", nullable: true })
-  resolvedAt?: Date;
+  resolvedAt?: Date | null;
 
   @CreateDateColumn()
   createdAt!: Date;

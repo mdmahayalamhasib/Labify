@@ -1,18 +1,21 @@
 import {
   Injectable,
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
 
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, LessThan, MoreThan, Repository } from "typeorm";
 
 import { CreateMaintenanceTicketDto } from "./dto/create-maintenance-ticket.dto";
 import { UpdateMaintenanceTicketDto } from "./dto/update-maintenance-ticket.dto";
 
 import { MaintenanceTicket } from "./entities/maintenance-ticket.entity";
 import { Equipment } from "../equipment/entities/equipment.entity";
+import { Booking } from "../booking/entities/booking.entity";
+import { BookingStatus } from "../../common/enums/booking-status.enum";
 import { MaintenanceStatus } from "../../common/enums/maintenance-status.enum";
 import { AccountRole } from "../../common/enums/account-role.enum";
 import { AuthUser } from "../../common/interfaces/auth-user.interface";
@@ -25,6 +28,9 @@ export class MaintenanceTicketService {
 
     @InjectRepository(Equipment)
     private readonly equipmentRepository: Repository<Equipment>,
+
+    @InjectRepository(Booking)
+    private readonly bookingRepository: Repository<Booking>,
   ) {}
 
   async createMaintenanceTicket(dto: CreateMaintenanceTicketDto, user: AuthUser) {
@@ -47,6 +53,12 @@ export class MaintenanceTicketService {
     const downtimeStart = dto.downtimeStart ? new Date(dto.downtimeStart) : null;
     const downtimeEnd = dto.downtimeEnd ? new Date(dto.downtimeEnd) : null;
     this.assertValidDowntime(downtimeStart, downtimeEnd);
+    await this.assertNoBookingConflict(
+      dto.equipmentId,
+      downtimeStart,
+      downtimeEnd,
+      MaintenanceStatus.OPEN,
+    );
 
     const ticket = this.maintenanceTicketRepository.create({
       ...dto,
@@ -146,12 +158,25 @@ export class MaintenanceTicketService {
 
     this.assertValidDowntime(ticket.downtimeStart, ticket.downtimeEnd);
 
+    await this.assertNoBookingConflict(
+      ticket.equipmentId,
+      ticket.downtimeStart,
+      ticket.downtimeEnd,
+      ticket.status,
+    );
+
     if (
       (ticket.status === MaintenanceStatus.RESOLVED ||
         ticket.status === MaintenanceStatus.CLOSED) &&
       !ticket.resolvedAt
     ) {
       ticket.resolvedAt = new Date();
+    } else if (
+      dto.status &&
+      (dto.status === MaintenanceStatus.OPEN ||
+        dto.status === MaintenanceStatus.IN_PROGRESS)
+    ) {
+      ticket.resolvedAt = null;
     }
 
     return await this.maintenanceTicketRepository.save(ticket);
@@ -181,6 +206,36 @@ export class MaintenanceTicketService {
 
     if (start && end && end <= start) {
       throw new BadRequestException("downtimeEnd must be after downtimeStart");
+    }
+  }
+
+  private async assertNoBookingConflict(
+    equipmentId: string,
+    downtimeStart: Date | null | undefined,
+    downtimeEnd: Date | null | undefined,
+    status: MaintenanceStatus,
+  ) {
+    if (
+      !downtimeStart ||
+      (status !== MaintenanceStatus.OPEN &&
+        status !== MaintenanceStatus.IN_PROGRESS)
+    ) {
+      return;
+    }
+
+    const booking = await this.bookingRepository.findOne({
+      where: {
+        equipmentId,
+        status: In([BookingStatus.PENDING, BookingStatus.APPROVED]),
+        ...(downtimeEnd ? { startTime: LessThan(downtimeEnd) } : {}),
+        endTime: MoreThan(downtimeStart),
+      },
+    });
+
+    if (booking) {
+      throw new ConflictException(
+        "Maintenance downtime overlaps an existing booking",
+      );
     }
   }
 

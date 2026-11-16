@@ -11,6 +11,7 @@ import { CreateEquipmentDto } from "./dto/create-equipment.dto";
 import { UpdateEquipmentDto } from "./dto/update-equipment.dto";
 
 import { Equipment } from "./entities/equipment.entity";
+import { Lab } from "../labs/entities/lab.entity";
 import { EquipmentStatus } from "../../common/enums/equipment-status.enum";
 
 @Injectable()
@@ -18,9 +19,19 @@ export class EquipmentService {
   constructor(
     @InjectRepository(Equipment)
     private readonly equipmentRepository: Repository<Equipment>,
+
+    @InjectRepository(Lab)
+    private readonly labRepository: Repository<Lab>,
   ) {}
 
   async createEquipment(dto: CreateEquipmentDto) {
+    const lab = await this.labRepository.findOne({
+      where: { labId: dto.labId },
+    });
+    if (!lab) {
+      throw new NotFoundException("Lab not found");
+    }
+
     const equipment = this.equipmentRepository.create(dto);
 
     return await this.saveWithLabCheck(equipment);

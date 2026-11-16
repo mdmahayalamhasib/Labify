@@ -142,7 +142,7 @@ export class BookingService {
     const endTime = dto.endTime ? new Date(dto.endTime) : booking.endTime;
     const timesChanged = Boolean(dto.startTime || dto.endTime);
 
-    if (timesChanged) {
+    if (timesChanged || dto.status === BookingStatus.APPROVED) {
       await this.assertValidSlot(booking.equipmentId, startTime, endTime, id);
       await this.assertRulesAllow(booking.equipmentId, startTime, endTime);
     }
@@ -156,6 +156,8 @@ export class BookingService {
     }
 
     Object.assign(booking, dto);
+    booking.startTime = startTime;
+    booking.endTime = endTime;
 
     if (
       isStaff &&
