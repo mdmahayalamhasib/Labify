@@ -23,7 +23,21 @@ export class EquipmentService {
   async createEquipment(dto: CreateEquipmentDto) {
     const equipment = this.equipmentRepository.create(dto);
 
-    return await this.equipmentRepository.save(equipment);
+    return await this.saveWithLabCheck(equipment);
+  }
+
+  private async saveWithLabCheck(equipment: Equipment) {
+    try {
+      return await this.equipmentRepository.save(equipment);
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        (error.driverError as { code?: string })?.code === "23503"
+      ) {
+        throw new NotFoundException("Lab not found");
+      }
+      throw error;
+    }
   }
 
   async getAllEquipment(
@@ -70,7 +84,7 @@ export class EquipmentService {
     }
 
     Object.assign(equipment, dto);
-    return await this.equipmentRepository.save(equipment);
+    return await this.saveWithLabCheck(equipment);
   }
 
   async deleteEquipment(id: string) {

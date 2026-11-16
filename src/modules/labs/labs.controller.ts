@@ -41,6 +41,7 @@ export class LabsController {
 
   @Get()
   findAll(
+    @Req() req: IRequest,
     @Query('domain') domain?: string,
     @Query('country') country?: string,
     @Query('city') city?: string,
@@ -50,7 +51,7 @@ export class LabsController {
     if (page < 1) throw new BadRequestException('Page must be greater than 0');
     if (limit < 1) throw new BadRequestException('Limit must be greater than 0');
 
-    return this.labsService.findAllLabs({ domain, country, city, page, limit });
+    return this.labsService.findAllLabs({ domain, country, city, page, limit }, req.user!);
   }
 
  
@@ -63,15 +64,11 @@ export class LabsController {
   }
 
   @Get('tags')
-  @UseGuards(RolesGuard)
-  @Roles(AccountRole.ADMIN)
   findAllTags() {
     return this.labsService.findAllTags();
   }
 
   @Get('tags/:id')
-  @UseGuards(RolesGuard)
-  @Roles(AccountRole.ADMIN)
   findTagById(@Param('id', ParseUUIDPipe) id: string) {
     return this.labsService.findTagById(id);
   }
@@ -92,8 +89,8 @@ export class LabsController {
 
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.labsService.findLabById(id);
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: IRequest) {
+    return this.labsService.findLabById(id, req.user!);
   }
 
   @Patch(':id')
@@ -141,8 +138,8 @@ export class LabsController {
   }
 
   @Get(':id/capabilities')
-  findCapabilities(@Param('id', ParseUUIDPipe) id: string) {
-    return this.labsService.findLabCapabilities(id);
+  findCapabilities(@Param('id', ParseUUIDPipe) id: string, @Req() req: IRequest) {
+    return this.labsService.findLabCapabilities(id, req.user!);
   }
 
   @Delete(':id/capabilities/:capabilityId')

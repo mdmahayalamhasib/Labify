@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Lab } from './lab.entity';
+import { LabMemberRole } from '../enums/lab.enums';
 
 @Entity('lab_members')
 @Unique(['labId', 'userId'])
@@ -14,9 +15,12 @@ export class LabMember {
   @Column({ type: 'uuid' })
   userId!: string;
 
-  @Column()
-  memberRole!: string; 
-
+  @Column({
+    type: 'enum',
+    enum: LabMemberRole,
+    enumName: 'lab_members_member_role_enum',
+  })
+  memberRole!: LabMemberRole;
 
   @Column({ nullable: true })
   supervisorName?: string;

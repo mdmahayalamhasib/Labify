@@ -5,9 +5,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
 
 import { EquipmentStatus } from "../../../common/enums/equipment-status.enum";
+import { Lab } from "../../labs/entities/lab.entity";
 
 @Entity({ name: "equipment" })
 export class Equipment {
@@ -16,6 +19,10 @@ export class Equipment {
 
   @Column({ type: "uuid" })
   labId!: string;
+
+  @ManyToOne(() => Lab, { onDelete: "RESTRICT" })
+  @JoinColumn({ name: "lab_id" })
+  lab?: Lab;
 
   @Column()
   name!: string;
