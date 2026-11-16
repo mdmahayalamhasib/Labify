@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { LabMember } from './lab-member.entity';
 import { LabCapability } from './lab-capability.entity';
+import { LabVisibility } from '../enums/lab.enums';
 
 @Entity('labs')
 export class Lab {
@@ -22,8 +23,13 @@ export class Lab {
   @Column()
   city!: string;
 
-  @Column({ default: 'public' })
-  visibility!: string;
+  @Column({
+    type: 'enum',
+    enum: LabVisibility,
+    enumName: 'labs_visibility_enum',
+    default: LabVisibility.PUBLIC,
+  })
+  visibility!: LabVisibility;
 
   @CreateDateColumn()
   verifiedAt!: Date;
